@@ -2,15 +2,22 @@ package pvcscheduler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
+	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/klog/v2"
 	"k8s.io/kubernetes/pkg/scheduler/framework"
 )
 
+type Args struct {
+	EnvType string `json:"env_type,omitempty"`
+	EnvName string `json:"env_name,omitempty"`
+}
 type PvcScheduler struct {
+	args   *Args
 	handle framework.Handle
 }
 
@@ -48,6 +55,17 @@ func (ps *PvcScheduler) Bind(state *framework.CycleState, pod *v1.Pod, node *v1.
 }
 
 // New initializes a new plugin and returns it.
-func New(_ runtime.Object, h framework.Handle) (framework.Plugin, error) {
-	return &PvcScheduler{handle: h}, nil
+func New(configuration *runtime.Unknown, h framework.Handle) (framework.Plugin, error) {
+	args := &Args{}
+	if configuration == nil {
+		return nil, errors.Errorf("No config is found")
+	}
+	if configuration.ContentType != "application/json" {
+		return nil, errors.Errorf("cannot parse content type: %v", configuration.ContentType)
+	}
+	klog.V(3).Infof("get plugin config args: %+v", args)
+	if err := json.Unmarshal(configuration.Raw, args); err != nil {
+		return nil, errors.Wrap(err, "could not parse args")
+	}
+	return &PvcScheduler{args: args, handle: h}, nil
 }
