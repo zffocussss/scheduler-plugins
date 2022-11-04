@@ -90,6 +90,16 @@ func SetDefaults_NodeResourcesAllocatableArgs(obj *NodeResourcesAllocatableArgs)
 	}
 }
 
+// SetDefaults_GinoPvcArgs sets the defaults parameters for GinoPvc.
+func SetDefaults_GinoPvcArgs(obj *GinoPvcArgs) {
+	if obj.EnvName == "" {
+		obj.EnvName = "dox"
+	}
+	if obj.EnvType == "" {
+		obj.EnvType = "ali"
+	}
+}
+
 // SetDefaultTrimaranSpec sets the default parameters for common Trimaran plugins
 func SetDefaultTrimaranSpec(args *TrimaranSpec) {
 	if args.WatcherAddress == nil && args.MetricProvider.Type == "" {

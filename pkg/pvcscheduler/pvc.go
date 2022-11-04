@@ -10,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/klog/v2"
 	"k8s.io/kubernetes/pkg/scheduler/framework"
+	"sigs.k8s.io/scheduler-plugins/apis/config"
 )
 
 type Args struct {
@@ -24,7 +25,7 @@ type PvcScheduler struct {
 var _ = framework.PostBindPlugin(&PvcScheduler{})
 var _ = framework.PreBindPlugin(&PvcScheduler{})
 
-const Name = "gino-pvc-scheduler"
+const Name = "GinoPvc"
 
 func (p *PvcScheduler) Name() string {
 	return Name
@@ -55,17 +56,12 @@ func (ps *PvcScheduler) Bind(state *framework.CycleState, pod *v1.Pod, node *v1.
 }
 
 // New initializes a new plugin and returns it.
-func New(configuration *runtime.Unknown, h framework.Handle) (framework.Plugin, error) {
+func New(configuration runtime.Object, h framework.Handle) (framework.Plugin, error) {
+	a := configuration.(*config.GinoPvcArgs)
 	args := &Args{}
 	if configuration == nil {
 		return nil, errors.Errorf("No config is found")
 	}
-	if configuration.ContentType != "application/json" {
-		return nil, errors.Errorf("cannot parse content type: %v", configuration.ContentType)
-	}
-	klog.V(3).Infof("get plugin config args: %+v", args)
-	if err := json.Unmarshal(configuration.Raw, args); err != nil {
-		return nil, errors.Wrap(err, "could not parse args")
-	}
+	klog.V(3).Infof("get plugin config args: %+v", a)
 	return &PvcScheduler{args: args, handle: h}, nil
 }

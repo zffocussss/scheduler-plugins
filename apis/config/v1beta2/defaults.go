@@ -94,6 +94,16 @@ func SetDefaults_NodeResourcesAllocatableArgs(obj *NodeResourcesAllocatableArgs)
 	}
 }
 
+// SetDefaults_GinoPvcArgs sets the defaults parameters for GinoPvc.
+func SetDefaults_GinoPvcArgs(obj *GinoPvcArgs) {
+	if obj.EnvName == "" {
+		obj.EnvName = "dox"
+	}
+	if obj.EnvType == "" {
+		obj.EnvType = "ali"
+	}
+}
+
 // SetDefaults_TargetLoadPackingArgs sets the default parameters for TargetLoadPacking plugin
 func SetDefaults_TargetLoadPackingArgs(args *TargetLoadPackingArgs) {
 	if args.DefaultRequests == nil {

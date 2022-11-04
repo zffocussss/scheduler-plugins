@@ -61,6 +61,14 @@ type NodeResourcesAllocatableArgs struct {
 	Mode ModeType `json:"mode,omitempty"`
 }
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// GinoPvcArgs holds arguments used to configure GinoPvc plugin.
+type GinoPvcArgs struct {
+	metav1.TypeMeta `json:",inline"`
+	EnvType         string `json:"env_type,omitempty"`
+	EnvName         string `json:"env_name,omitempty"`
+}
+
 // MetricProviderType is a "string" type.
 type MetricProviderType string
 
